@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load split %}
+{% load easy_maps_tags cache %}
+
+{% block title %}Map of Events{% endblock title %}
+
+{% block sidebar %}
+    {% for page in page_list %}
+        {% if page.title != 'HomePage' %}
+            <a href="{% url 'page_detail' username=username slug=page.slug %}">{{page.title}}</a>
+        {% endif %}
+    {% endfor %}
+{% endblock sidebar %}
+
+{% block content %}
+    {% for map_of_events in addresses %}
+        {% for event, address in map_of_events|split %}
+            <div style="width: 700px;">
+                <div style="float: left; width: 200px;">
+                    {% easy_map address 160 220 %}
+                    <h3><b>{{event | capfirst }}</b></h3>
+                    {{address}}<br>
+                    {% if logged_user.is_authenticated %}
+                        <form>
+                            <input type="button" value="Edit Address" onClick="window.location.href='/homepage/address/edit/{{logged_user}}/{{map_of_events.pk}}'">
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+{% endblock content %}
